@@ -36,10 +36,10 @@ public class PlayerController : MonoBehaviour
         deltaLook = context.ReadValue<Vector2>() * _sensitivity;
     }
 
-    public void Jump(CallbackContext context)
-    {
-        throw new NotImplementedException("No Jump Made");
-    }
+    //public void Jump(CallbackContext context)
+    //{
+    //    throw new NotImplementedException("No Jump Made");
+    //}
 
     public void Use(CallbackContext context)
     {
