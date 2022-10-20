@@ -11,6 +11,9 @@ public class PlayerController : MonoBehaviour
     private CharacterController _characterController;
 
     [SerializeField]
+    private GameObject _holdPosition;
+
+    [SerializeField]
     private float _speed = 11f;
 
     [SerializeField]
@@ -25,7 +28,13 @@ public class PlayerController : MonoBehaviour
     private Vector2 deltaLook;
 
     private Vector3 _moveDirection;
+
+    private PickUp _pickUp;
+
+    private bool _holding = false;
+
     public CharacterController CharacterController { get => _characterController; }
+
     public void SetMove(CallbackContext context)
     {
         _moveDirection = new Vector3(context.ReadValue<Vector2>().x, 0 , context.ReadValue<Vector2>().y);
@@ -36,14 +45,14 @@ public class PlayerController : MonoBehaviour
         deltaLook = context.ReadValue<Vector2>() * _sensitivity;
     }
 
-    //public void Jump(CallbackContext context)
-    //{
-    //    throw new NotImplementedException("No Jump Made");
-    //}
-
     public void Use(CallbackContext context)
     {
-        throw new NotImplementedException("No Use Made");
+        if (!_holding && _pickUp != null)
+        {
+            _pickUp.transform.SetParent(_holdPosition.transform, false);
+            _pickUp.transform.localPosition = Vector3.zero;
+            _holding = true;
+        }
     }
 
     public void Pause(CallbackContext context)
@@ -51,9 +60,12 @@ public class PlayerController : MonoBehaviour
         throw new NotImplementedException("No Pause Made");
     }
 
-    public void Inventory(CallbackContext context)
+
+    private void Start()
     {
-        throw new NotImplementedException("No Inventory Made");
+        //Lock and hide cursor
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void Update()
@@ -67,6 +79,14 @@ public class PlayerController : MonoBehaviour
         {
             _camera.transform.Rotate(-deltaLook.y, 0, 0);
             _currentRotation += deltaLook.y;
+        }
+
+
+        RaycastHit hit;
+        if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformDirection(Vector3.forward), out hit, 2f) )
+        {
+            Debug.DrawRay(_camera.transform.position, _camera.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+            _pickUp = hit.collider.GetComponent<PickUp>();
         }
     }
 }
