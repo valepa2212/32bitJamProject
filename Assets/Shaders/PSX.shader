@@ -2,7 +2,7 @@
 // However, if you want to author shaders in shading language you can use this teamplate as a base.
 // Please note, this shader does not necessarily match perfomance of the built-in URP Lit shader.
 // This shader works with URP 7.1.x and above
-Shader "Universal Render Pipeline/Custom/Physically Based Example"
+Shader "Universal Render Pipeline/Custom/ps1"
 {
     Properties
     {
