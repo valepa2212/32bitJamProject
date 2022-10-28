@@ -13,11 +13,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private GameObject _holdPosition;
 
-    [SerializeField]
-    private GameObject _popUpText;
+    //[SerializeField]
+    //private GameObject _popUpText;
 
-    [SerializeField]
-    private GameObject _pauseMenu;
+    //[SerializeField]
+    //private GameObject _pauseMenu;
 
     [SerializeField]
     private float _speed = 11f;
@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour
             Time.timeScale = 0f;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            _pauseMenu.SetActive(true);
+            //_pauseMenu.SetActive(true);
         }
         else
         {
@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
-            _pauseMenu.SetActive(false);
+            //_pauseMenu.SetActive(false);
         }
     }
 
@@ -123,24 +123,24 @@ public class PlayerController : MonoBehaviour
 
         //Check if looking at interactable object or place position
         RaycastHit hit;
-        _popUpText.SetActive(false);
+        //_popUpText.SetActive(false);
         if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformDirection(Vector3.forward), out hit, 2f) )
         {
             if (!_holding)
             {
                 _interactable = hit.collider.GetComponent<Interactable>();
-                if (_interactable != null)
-                {
-                    _popUpText.SetActive(true);
-                }
+                //if (_interactable != null)
+                //{
+                //    _popUpText.SetActive(true);
+                //}
             }
             if (_holding)
             {
                 _placePosition = hit.collider.GetComponent<PlacePosition>();
-                if (_placePosition != null)
-                {
-                    _popUpText.SetActive(true);
-                }
+                //if (_placePosition != null)
+                //{
+                //    _popUpText.SetActive(true);
+                //}
             }
         }
     }
