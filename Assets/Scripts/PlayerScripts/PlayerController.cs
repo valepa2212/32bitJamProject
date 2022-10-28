@@ -29,7 +29,11 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 _moveDirection;
 
-    private PickUp _pickUp;
+    private Interactable _interactable;
+
+    private GameObject _heldItem;
+
+    private PlacePosition _placePosition;
 
     private bool _holding = false;
 
@@ -47,11 +51,21 @@ public class PlayerController : MonoBehaviour
 
     public void Use(CallbackContext context)
     {
-        if (!_holding && _pickUp != null)
+        if (!_holding && _interactable != null)
         {
-            _pickUp.transform.SetParent(_holdPosition.transform, false);
-            _pickUp.transform.localPosition = Vector3.zero;
+            _heldItem = _interactable.gameObject;
+            _heldItem.transform.SetParent(_holdPosition.transform, false);
+            _heldItem.transform.localPosition = Vector3.zero;
             _holding = true;
+            _interactable = null;
+        }
+        if (_holding && _placePosition != null)
+        {
+            _heldItem.transform.SetParent(_placePosition.transform, false);
+            _heldItem.transform.localPosition = Vector3.zero;
+            _holding = false;
+            Destroy(_heldItem.GetComponent<Interactable>());
+            Destroy(_placePosition.GetComponent<PlacePosition>());
         }
     }
 
@@ -81,12 +95,19 @@ public class PlayerController : MonoBehaviour
             _currentRotation += deltaLook.y;
         }
 
-
+        //Check if looking at interactable object or place position
         RaycastHit hit;
         if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformDirection(Vector3.forward), out hit, 2f) )
         {
             Debug.DrawRay(_camera.transform.position, _camera.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-            _pickUp = hit.collider.GetComponent<PickUp>();
+            if (!_holding)
+            {
+                _interactable = hit.collider.GetComponent<Interactable>();
+            }
+            if (_holding)
+            {
+                _placePosition = hit.collider.GetComponent<PlacePosition>();
+            }
         }
     }
 }
