@@ -37,6 +37,8 @@ public class PlayerController : MonoBehaviour
 
     private bool _holding = false;
 
+    private bool _isPaused = false;
+
     public CharacterController CharacterController { get => _characterController; }
 
     public void SetMove(CallbackContext context)
@@ -56,22 +58,35 @@ public class PlayerController : MonoBehaviour
             _heldItem = _interactable.gameObject;
             _heldItem.transform.SetParent(_holdPosition.transform, false);
             _heldItem.transform.localPosition = Vector3.zero;
-            _holding = true;
             _interactable = null;
+            _holding = true;
         }
         if (_holding && _placePosition != null)
         {
             _heldItem.transform.SetParent(_placePosition.transform, false);
             _heldItem.transform.localPosition = Vector3.zero;
-            _holding = false;
             Destroy(_heldItem.GetComponent<Interactable>());
             Destroy(_placePosition.GetComponent<PlacePosition>());
+            _holding = false;
         }
     }
 
     public void Pause(CallbackContext context)
     {
-        throw new NotImplementedException("No Pause Made");
+        if (!_isPaused)
+        {
+            _isPaused = true;
+            Time.timeScale = 0f;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            _isPaused = false;
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
 
@@ -88,18 +103,20 @@ public class PlayerController : MonoBehaviour
         CharacterController.Move(_speed * Time.deltaTime * transform.TransformDirection(_moveDirection));
 
         //Camera Rotation
-        transform.Rotate(0, deltaLook.x, 0);
-        if (Math.Abs(_currentRotation + deltaLook.y) < _maxRotation)
+        if (!_isPaused)
         {
-            _camera.transform.Rotate(-deltaLook.y, 0, 0);
-            _currentRotation += deltaLook.y;
+            transform.Rotate(0, deltaLook.x, 0);
+            if (Math.Abs(_currentRotation + deltaLook.y) < _maxRotation)
+            {
+                _camera.transform.Rotate(-deltaLook.y, 0, 0);
+                _currentRotation += deltaLook.y;
+            }
         }
 
         //Check if looking at interactable object or place position
         RaycastHit hit;
         if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformDirection(Vector3.forward), out hit, 2f) )
         {
-            Debug.DrawRay(_camera.transform.position, _camera.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
             if (!_holding)
             {
                 _interactable = hit.collider.GetComponent<Interactable>();
