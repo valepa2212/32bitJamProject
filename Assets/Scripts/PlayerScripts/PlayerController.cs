@@ -20,6 +20,9 @@ public class PlayerController : MonoBehaviour
     //private GameObject _pauseMenu;
 
     [SerializeField]
+    private float _interactionDistance = 2f;
+
+    [SerializeField]
     private float _speed = 11f;
 
     [SerializeField]
@@ -124,7 +127,7 @@ public class PlayerController : MonoBehaviour
         //Check if looking at interactable object or place position
         RaycastHit hit;
         //_popUpText.SetActive(false);
-        if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformDirection(Vector3.forward), out hit, 2f) )
+        if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformDirection(Vector3.forward), out hit, _interactionDistance) )
         {
             if (!_holding)
             {
