@@ -38,11 +38,9 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 _moveDirection;
 
-    private Interactable _interactable;
+    private GameObject _interactableObject;
 
     private GameObject _heldItem;
-
-    private PlacePosition _placePosition;
 
     private bool _holding = false;
 
@@ -62,21 +60,24 @@ public class PlayerController : MonoBehaviour
 
     public void Use(CallbackContext context)
     {
-        if (!_holding && _interactable != null)
+        if (_interactableObject != null)
         {
-            _heldItem = _interactable.gameObject;
-            _heldItem.transform.SetParent(_holdPosition.transform, false);
-            _heldItem.transform.localPosition = Vector3.zero;
-            _interactable = null;
-            _holding = true;
-        }
-        if (_holding && _placePosition != null)
-        {
-            _heldItem.transform.SetParent(_placePosition.transform, false);
-            _heldItem.transform.localPosition = Vector3.zero;
-            Destroy(_heldItem.GetComponent<Interactable>());
-            Destroy(_placePosition.GetComponent<PlacePosition>());
-            _holding = false;
+            if (!_holding && _interactableObject.tag == "Item")
+            {
+                _heldItem = _interactableObject;
+                _heldItem.transform.SetParent(_holdPosition.transform, false);
+                _heldItem.transform.localPosition = Vector3.zero;
+                _heldItem.tag = "Untagged";
+                Destroy(_heldItem.GetComponent<SphereCollider>());
+                _holding = true;
+            }
+            if (_holding && _interactableObject.tag == "PlacePosition")
+            {
+                _heldItem.transform.SetParent(_interactableObject.transform, false);
+                _heldItem.transform.localPosition = Vector3.zero;
+                _interactableObject.tag = "Untagged";
+                _holding = false;
+            }
         }
     }
 
@@ -127,24 +128,10 @@ public class PlayerController : MonoBehaviour
         //Check if looking at interactable object or place position
         RaycastHit hit;
         //_popUpText.SetActive(false);
+        _interactableObject = null;
         if (Physics.Raycast(_camera.transform.position, _camera.transform.TransformDirection(Vector3.forward), out hit, _interactionDistance) )
         {
-            if (!_holding)
-            {
-                _interactable = hit.collider.GetComponent<Interactable>();
-                //if (_interactable != null)
-                //{
-                //    _popUpText.SetActive(true);
-                //}
-            }
-            if (_holding)
-            {
-                _placePosition = hit.collider.GetComponent<PlacePosition>();
-                //if (_placePosition != null)
-                //{
-                //    _popUpText.SetActive(true);
-                //}
-            }
+            _interactableObject = hit.transform.gameObject;
         }
     }
 }
